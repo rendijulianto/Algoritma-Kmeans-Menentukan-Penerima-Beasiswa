@@ -193,10 +193,10 @@ class Mahasiswa extends Model
 
     public function getSedangMenerimaBeasiswaTextAttribute()
     {
-        if ($this->sedang_menerima_beasiswa == 0) {
-            return 'Tidak';
-        } else {
+        if ($this->sedang_menerima_beasiswa ==  "0") {
             return 'Ya';
+        } else {
+            return 'Tidak';
         }
     }
 

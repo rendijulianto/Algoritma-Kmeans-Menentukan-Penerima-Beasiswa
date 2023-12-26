@@ -27,9 +27,9 @@ class MahasiswaSeeder extends Seeder
             'klaster_beasiswa' => null,
             'jenjang_pendidikan' => 2,
             'ipk' => 4,
-            'aktif_organisasi' => 1,
+            'aktif_organisasi' => 0,
             'semester' => 4,
-            'sedang_menerima_beasiswa' => 0,
+            'sedang_menerima_beasiswa' => 1,
             'domisili' => 0,
             'tunggakan' => 1,
         ];
@@ -49,8 +49,8 @@ class MahasiswaSeeder extends Seeder
             'ipk' => 4,
             'aktif_organisasi' => 1,
             'semester' => 3,
-            'sedang_menerima_beasiswa' => 0,
-            'domisili' => 1,
+            'sedang_menerima_beasiswa' => 1,
+            'domisili' => 0,
             'tunggakan' => 1,
         ];
 
@@ -166,12 +166,12 @@ class MahasiswaSeeder extends Seeder
             'status_penerima_beasiswa' => 0,
             'klaster_beasiswa' => null,
             'jenjang_pendidikan' => 2,
-            'ipk' => 4,
-            'aktif_organisasi' => 1,
-            'semester' => 3,
-            'sedang_menerima_beasiswa' => 0,
+            'ipk' => 3,
+            'aktif_organisasi' => 0,
+            'semester' => 4,
+            'sedang_menerima_beasiswa' => 1,
             'domisili' => 1,
-            'tunggakan' => 1,
+            'tunggakan' => 0,
         ];
 
         $mahasiswa[] = [
@@ -187,10 +187,10 @@ class MahasiswaSeeder extends Seeder
             'klaster_beasiswa' => null,
             'jenjang_pendidikan' => 2,
             'ipk' => 4,
-            'aktif_organisasi' => 1,
-            'semester' => 3,
-            'sedang_menerima_beasiswa' => 0,
-            'domisili' => 1,
+            'aktif_organisasi' => 0,
+            'semester' => 4,
+            'sedang_menerima_beasiswa' => 1,
+            'domisili' => 0,
             'tunggakan' => 1,
         ];
 
@@ -207,10 +207,10 @@ class MahasiswaSeeder extends Seeder
             'klaster_beasiswa' => null,
             'jenjang_pendidikan' => 2,
             'ipk' => 4,
-            'aktif_organisasi' => 1,
-            'semester' => 3,
+            'aktif_organisasi' => 0,
+            'semester' => 4,
             'sedang_menerima_beasiswa' => 0,
-            'domisili' => 1,
+            'domisili' => 0,
             'tunggakan' => 1,
         ];
 
@@ -246,10 +246,10 @@ class MahasiswaSeeder extends Seeder
             'status_penerima_beasiswa' => 0,
             'klaster_beasiswa' => null,
             'jenjang_pendidikan' => 2,
-            'ipk' => 4,
+            'ipk' => 3,
             'aktif_organisasi' => 1,
-            'semester' => 3,
-            'sedang_menerima_beasiswa' => 0,
+            'semester' => 4,
+            'sedang_menerima_beasiswa' => 1,
             'domisili' => 1,
             'tunggakan' => 1,
         ];
