@@ -1,116 +1,140 @@
 @extends('layouts.app')
 @section('breadcrumb')
-<div class="page-breadcrumb bg-white">
-  <div class="row align-items-center">
-      <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-          <h4 class="page-title">Blank Page</h4>
-      </div>
-      <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
-          <div class="d-md-flex">
-              <ol class="breadcrumb ms-auto">
-                  <li><a href="#" class="fw-normal">Dashboard</a></li>
-              </ol>
-              <a href="https://www.wrappixel.com/templates/ampleadmin/" target="_blank"
-                  class="btn btn-danger  d-none d-md-block pull-right ms-3 hidden-xs hidden-sm waves-effect waves-light text-white">Upgrade
-                  to Pro</a>
-          </div>
-      </div>
+<div class="font-weight-medium shadow-none position-relative overflow-hidden mb-4">
+  <div class="d-sm-flex d-block justify-content-between align-items-center">
+     <h5 class="mb-0 fw-semibold text-uppercase"> 
+        Kelola Mahasiswa
+     </h5>
   </div>
-  <!-- /.col-lg-12 -->
 </div>
 @endsection
 @section('content')
 <div class="row">
-    <div class="col-md-12">
-        <div class="white-box">
-            <h3 class="box-title">Mahasiswa</h3>
-            <div class="widget-content searchable-container list">
-                <div class="card card-body">
-                  <div class="table-responsive">
-                    <table class="table search-table v-middle">
-                      <thead class="header-item">
-                        <th>
-                          <div class="n-chk align-self-center text-center">
-                           <b>No</b>
-                          </div>
-                        </th>
-                        <th class="font-weight-medium fs-4">Nama</th>
-                        <th class="font-weight-medium fs-4">Pekerjaan Ayah</th>
-                        <th class="font-weight-medium fs-4">Pekerjaan Ibu</th>
-                        <th class="font-weight-medium fs-4">Penghasilan Ayah</th>
-                        <th class="font-weight-medium fs-4">Penghasilan Ibu</th>
-                        <th class="font-weight-medium fs-4">Jumlah Saudara</th>
-                        <th class="font-weight-medium fs-4">Kondisi Anak</th>
-                      </thead>
-                      <tbody>
-                       @forelse ($mahasiswa as $mhs)
-                            <!-- row -->
-                        <tr class="search-items">
-                            <td>
-                              <div class="n-chk align-self-center text-center">
-                                <b>{{ $mahasiswa->firstItem() + $loop->iteration - 1 }}</b>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="d-flex align-items-center">
-                                <span
-                                  class="
-                                    round
-                                    rounded-circle
-                                    text-white
-                                    d-inline-block
-                                    text-center
-                                    bg-info
-                                  "
-                                  >{{ substr($mhs->nama, 0, 1) }}</span
-                                >
-                                <div class="ms-3">
-                                  <div class="user-meta-info">
-                                    <h5 class="user-name mb-0" data-name="{{ $mhs->nama }}">{{ $mhs->nama }}</h5>
-                                      
-                                    <small
-                                      class="user-work text-muted"
-                                      data-occupation="Web Developer"
-                                      >{{$mhs->jurusan}}</small
-                                    >
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              {{$mhs->pekerjaan_ayah_text}}
-                            </td>
-                            <td>
-                                {{$mhs->pekerjaan_ibu_text}}
-                            </td>
-                            <td>
-                                {{$mhs->penghasilan_ayah_text}}
-                            </td>
-                            <td>
-                                {{$mhs->penghasilan_ibu_text}}
-                            </td>
-                            <td>
-                                {{$mhs->jumlah_saudara_text}}
-                            </td>
-                            <td>
-                                {{$mhs->kondisi_anak_text}}
-                            </td>
-                          </tr>
-                          <!-- /.row -->
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center">Data Kosong</td>    
-                            </tr>
-                        @endforelse
-
-                      
-                      </tbody>
-                    </table>
-                    {{ $mahasiswa->withQueryString()->links('pagination::bootstrap-4') }}
-                  </div>
-                </div>
-            </div>
+  <div class="col-md-12">
+     <div class="card">
+        <div class="card-body">
+           <h5 class="card-title mb-0">Mahasiswa</h5>
+           <a  class="btn btn-primary float-end" href="{{route('mahasiswa.create')}}">
+               <iconify-icon icon="akar-icons:plus" class="iconify-md"></iconify-icon>
+            Tambah Mahasiswa
+           </a>
         </div>
-    </div>
+        <div class="table-responsive">
+           <table class="table no-wrap user-table mb-0">
+              <thead>
+                 <tr>
+                    <th
+                       scope="col"
+                       class="border-0  ps-4"
+                       >
+                       #
+                    </th>
+                    <th scope="col" class="border-0 ">
+                        Nama
+                    </th>
+                    <th scope="col" class="border-0 ">
+                       Pekerjaan Ayah
+                    </th>
+                    <th scope="col" class="border-0 ">
+                        Pekerjaan Ibu
+                    </th>
+                    
+                    <th scope="col" class="border-0 ">
+                        Jumlah Saudara
+                    </th>
+                    <th scope="col" class="border-0 ">
+                        Kondisi Anak
+                    </th>
+                    <th scope="col" class="border-0 ">
+                       Manage
+                    </th>
+                 </tr>
+              </thead>
+              <tbody>
+                @forelse($mahasiswa as $mhs)
+                <tr>
+                  <td class="ps-4">{{$mhs->id}}</td>
+                  <td>
+                     <div class="d-flex align-items-center">
+                        <img
+                           src="{{asset('assets/images/profile/user-1.jpg')}}"
+                           class="rounded  round-50"
+                           />
+                        <div class="ms-3">
+                           <h6 class=" mb-0">
+                              {{$mhs->nama}}
+                           </h6>
+                           <span class="text-muted"
+                              >{{$mhs->jurusan}}
+                              </span
+                              >
+                           <br />
+                           @if($mhs->status_penerima_beasiswa == 1)
+                              <span class="badge bg-success">Menerima Beasiswa </span> 
+                           @else
+                              <span class="badge bg-danger">Tidak Menerima Beasiswa </span>
+                           @endif
+                        </div>
+                     </div>
+                  </td>
+                  <td>
+                     <span>
+                        {{$mhs->pekerjaan_ayah_text}}
+                     </span> <br />
+                     <span>
+                        {{$mhs->penghasilan_ayah_text}}
+                      </span>
+                  </td>
+                  <td>
+                      <span>
+                          {{$mhs->pekerjaan_ibu_text}}
+                      </span> <br />
+                      <span>
+                          {{$mhs->penghasilan_ibu_text}}
+                      </span>
+                  </td>
+         
+                
+                  <td>
+                      <span>
+                          {{$mhs->jumlah_saudara_text}}
+                      </span>
+                  </td>
+                  <td>
+                      <span>
+                          {{$mhs->kondisi_anak_text}}
+                      </span>
+                  </td>
+                  <td>
+                  
+                     <a href="{{route('mahasiswa.edit', $mhs->id)}}" class="text-dark edit">
+                        <iconify-icon icon="solar:pen-bold" class="iconify-md"></iconify-icon>
+                     </a>
+                     <form action="{{route('mahasiswa.destroy', $mhs->id)}}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                       {{-- confirm --}}
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-link text-danger" type="submit">
+                           <iconify-icon icon="solar:trash-bin-2-bold" class="iconify-md"></iconify-icon>
+                        </button>
+                      </form>
+                      <a href="{{route('mahasiswa.show', $mhs->id)}}" class="text-dark edit">
+                        <iconify-icon icon="solar:eye-bold" class="iconify-md"></iconify-icon>
+                     </a>
+                  </td>
+                  </td>
+               </tr>
+                @empty 
+                <tr>
+                    <td colspan="9" class="text-center">Data Kosong</td>
+                </tr>
+                @endforelse
+        
+              </tbody>
+           </table>
+          </div>
+        </div>
+        {{$mahasiswa->withQueryString()->links('pagination::bootstrap-4')}}
+  </div>
 </div>
 @endsection

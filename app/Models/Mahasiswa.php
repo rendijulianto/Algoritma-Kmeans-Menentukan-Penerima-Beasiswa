@@ -20,7 +20,15 @@ class Mahasiswa extends Model
         'penghasilan_ibu',
         'jumlah_saudara',
         'kondisi_anak',
-        'status_penerima_beasiswa'
+        'status_penerima_beasiswa',
+        'klaster_beasiswa',
+        'jenjang_pendidikan',
+        'ipk',
+        'aktif_organisasi',
+        'semester',
+        'sedang_menerima_beasiswa',
+        'domisili',
+        'tunggakan'
     ];
 
     // append attribute
@@ -30,7 +38,15 @@ class Mahasiswa extends Model
         'penghasilan_ayah_text',
         'penghasilan_ibu_text',
         'jumlah_saudara_text',
-        'kondisi_anak_text'
+        'kondisi_anak_text',
+        'status_penerima_beasiswa_text',
+        'jenjang_pendidikan_text',
+        'ipk_text',
+        'aktif_organisasi_text',
+        'sedang_menerima_beasiswa_text',
+        'domisili_text',
+        'tunggakan_text',
+        'semester_text'
     ];
 
     // accessor
@@ -147,6 +163,102 @@ class Mahasiswa extends Model
             return 'Yatim Piatu';
         }
     }
+
+    public function getStatusPenerimaBeasiswaTextAttribute()
+    {
+        if ($this->status_penerima_beasiswa == 0) {
+            return 'Tidak';
+        } else {
+            return 'Ya';
+        }
+    }
+
+    public function getJenjangPendidikanTextAttribute()
+    {
+        if ($this->jenjang_pendidikan == 1) {
+            return 'D3';
+        } elseif ($this->jenjang_pendidikan == 2) {
+            return 'S1';
+        }
+    }
+
+    public function getAktifOrganisasiTextAttribute()
+    {
+        if ($this->aktif_organisasi == 0) {
+            return 'Tidak';
+        } else {
+            return 'Sedang Aktif';
+        }
+    }
+
+    public function getSedangMenerimaBeasiswaTextAttribute()
+    {
+        if ($this->sedang_menerima_beasiswa == 0) {
+            return 'Tidak';
+        } else {
+            return 'Ya';
+        }
+    }
+
+
+    public function getDomisiliTextAttribute()
+    {
+        if ($this->domisili == 0) {
+            return 'Luar Kota Bandung';
+        } elseif ($this->domisili == 1) {
+            return 'Kota Bandung';
+        }
+    }
+
+    public function getTunggakanTextAttribute()
+    {
+        if ($this->tunggakan == 1) {
+            return 'Tidak';
+        } else {
+            return 'Ya';
+        }
+    }
+
+    public function getIpkTextAttribute()
+    {
+        if ($this->ipk == 1) {
+            return '0 - 99';
+        } elseif ($this->ipk == 2) {
+            return '1 - 1,99';
+        } elseif ($this->ipk == 3) {
+            return '2 - 2,99';
+        } elseif ($this->ipk == 4) {
+            return '3 - 4';
+        }
+    }
+
+    // semester
+    public function getSemesterTextAttribute()
+    {
+        if ($this->semester == 1) {
+            return '1 - 2';
+        } elseif ($this->semester == 2) {
+            return '3 - 4';
+        } elseif ($this->semester == 3) {
+            return '5 - 6';
+        } elseif ($this->semester == 4) {
+            return '7 - 8';
+        } else {
+            return '8> ';
+        }
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
 
 
     //hasil iterasi
