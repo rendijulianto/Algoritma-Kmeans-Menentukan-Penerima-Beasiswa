@@ -114,7 +114,6 @@ class MahasiswaController extends Controller
             'sedang_menerima_beasiswa' => 'required|numeric|min:0|max:1',
             'domisili' => 'required|numeric|min:0|max:1',
             'tunggakan' => 'required|numeric|min:0|max:1',
-
         ]);
 
         $mahasiswa->update([
@@ -146,4 +145,7 @@ class MahasiswaController extends Controller
         $mahasiswa->delete();
         return redirect()->route('mahasiswa.index')->with('success', 'Data berhasil dihapus');
     }
+
+
+    
 }

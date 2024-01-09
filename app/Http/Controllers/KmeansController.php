@@ -14,9 +14,9 @@ class KmeansController extends Controller
         $centroid=null;
         $mahasiswa=null;
         $step=null;
-        // orderby random name
         $mahasiswa = Mahasiswa::orderBy('nama', 'asc')->get();
         $step = $request->step;
+        $stop = false;
         if ($step) {
             $type_centroid = $request->centroid ?? null;
             if($step==1) {
@@ -63,6 +63,34 @@ class KmeansController extends Controller
                 ];
 
             } else {
+                $centroid_sebelumnya = [
+                    'centroid_1' => [
+                        'pekerjaan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c1a'),
+                        'pekerjaan_ibu' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c1b'),
+                        'penghasilan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c1c'),
+                        'penghasilan_ibu' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c1d'),
+                        'jumlah_saudara' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c1e'),
+                        'kondisi_anak' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c1f'),
+                    ],
+                    'centroid_2' => [
+                        'pekerjaan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c2a'),
+                        'pekerjaan_ibu' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c2b'),
+                        'penghasilan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c2c'),
+                        'penghasilan_ibu' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c2d'),
+                        'jumlah_saudara' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c2e'),
+                        'kondisi_anak' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c2f'),
+                    ],
+                    'centroid_3' => [
+                        'pekerjaan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c3a'),
+                        'pekerjaan_ibu' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c3b'),
+                        'penghasilan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c3c'),
+                        'penghasilan_ibu' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c3d'),
+                        'jumlah_saudara' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c3e'),
+                        'kondisi_anak' => DB::table('hasil_centroid')->where('iterasi', $step - 2)->avg('c3f'),
+                    ],
+                ];
+
+
                 $centroid = [
                     'centroid_1' => [
                         'pekerjaan_ayah' => DB::table('hasil_centroid')->where('iterasi', $step - 1)->avg('c1a'),
@@ -89,122 +117,231 @@ class KmeansController extends Controller
                         'kondisi_anak' => DB::table('hasil_centroid')->where('iterasi', $step - 1)->avg('c3f'),
                     ],
                 ];
+
+
+                if ($centroid_sebelumnya['centroid_1'] == $centroid['centroid_1'] && $centroid_sebelumnya['centroid_2'] == $centroid['centroid_2'] && $centroid_sebelumnya['centroid_3'] == $centroid['centroid_3']) {
+                    $stop = true;
+                    $this->setBeasiswa();
+                }
+
+        
             }
-            return view('kmeans.index', compact('centroid', 'mahasiswa', 'step'));
+            return view('kmeans.index', compact('centroid', 'mahasiswa', 'step', 'stop'));
         } else {
             return view('kmeans.init', compact('mahasiswa'));
         }
     }
 
-    public function beasiswa(Request $request)
+
+    private function setBeasiswa()
     {
-        $centroid=null;
-        $mahasiswa=null;
-        $step=null;
-        $mahasiswa = Mahasiswa::where('status_penerima_beasiswa', 1)->orderBy('nama', 'asc')->get();
-        $step = $request->step;
-        if($step) {
-            $type_centroid = $request->centroid ?? null;
-            if($step==1) {
-                $hasil_iterasi = DB::table('hasil_iterasi_beasiswa')->truncate();
-                $hasil_centroid = DB::table('hasil_centroid_beasiswa')->truncate();
+        $mahasiswa = Mahasiswa::all();
+        foreach ($mahasiswa as $key => $value) {
+            $hasil_iterasi = DB::table('hasil_iterasi')->where('mahasiswa_id', $value->id)->orderBy('iterasi', 'desc')->first();
+            $c1 = $hasil_iterasi->c1;
+            $c2 = $hasil_iterasi->c2;
+            $c3 = $hasil_iterasi->c3;
+            $cluster = $hasil_iterasi->rata_rata;
+            $mahasiswa[$key]->tipe_beasiswa = $this->tipeBeasiswa($value, $cluster);
+            $mahasiswa[$key]->klaster_beasiswa = $cluster;
+            $mahasiswa[$key]->save();
+        }
+        
+    }
 
-                if($type_centroid == "random") {
-                    $mahasiswa1 = DB::table('mahasiswa')->inRandomOrder()->first();
-                    $mahasiswa2 = DB::table('mahasiswa')->where('id', '!=', $mahasiswa1->id)->where('status_penerima_beasiswa', 1)->inRandomOrder()->first();
-                    $mahasiswa3 = DB::table('mahasiswa')->where('id', '!=', $mahasiswa1->id)->where('id', '!=', $mahasiswa2->id)->where('status_penerima_beasiswa', 1)->inRandomOrder()->first();
-                    $mahasiswa4 = DB::table('mahasiswa')->where('id', '!=', $mahasiswa1->id)->where('id', '!=', $mahasiswa2->id)->where('id', '!=', $mahasiswa3->id)->where('status_penerima_beasiswa', 1)->inRandomOrder()->first();
+    // clear
+    private function syaratBeasiswaRektorUnikomYS($mahasiswa)
+    {
+        if ($mahasiswa['semester'] >= 1 && $mahasiswa['semester'] <= 8) {
+            if ($mahasiswa['ipk'] >= 4) {
+                if ($mahasiswa['prestasi'] == 1) {
+                    if ($mahasiswa['aktif_organisasi'] == 1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } else {
-                    $mahasiswa1 = DB::table('mahasiswa')->where('id', $request->centroid1)->first();
-                    $mahasiswa2 = DB::table('mahasiswa')->where('id', $request->centroid2)->first();
-                    $mahasiswa3 = DB::table('mahasiswa')->where('id', $request->centroid3)->first();
-                    $mahasiswa4 = DB::table('mahasiswa')->where('id', $request->centroid4)->first();
+                    return false;
                 }
-
-                $centroid = [
-                    'centroid_1' => [
-                        'jenjang_pendidikan' => $mahasiswa1->jenjang_pendidikan,
-                        'ipk' => $mahasiswa1->ipk,
-                        'aktif_organisasi' => $mahasiswa1->aktif_organisasi,
-                        'semester' => $mahasiswa1->semester,
-                        'sedang_menerima_beasiswa' => $mahasiswa1->sedang_menerima_beasiswa,
-                        'domisili' => $mahasiswa1->domisili,
-                        'tunggakan' => $mahasiswa1->tunggakan,
-                    ],
-                    'centroid_2' => [
-                        'jenjang_pendidikan' => $mahasiswa2->jenjang_pendidikan,
-                        'ipk' => $mahasiswa2->ipk,
-                        'aktif_organisasi' => $mahasiswa2->aktif_organisasi,
-                        'semester' => $mahasiswa2->semester,
-                        'sedang_menerima_beasiswa' => $mahasiswa2->sedang_menerima_beasiswa,
-                        'domisili' => $mahasiswa2->domisili,
-                        'tunggakan' => $mahasiswa2->tunggakan,
-                    ],
-                    'centroid_3' => [
-                        'jenjang_pendidikan' => $mahasiswa3->jenjang_pendidikan,
-                        'ipk' => $mahasiswa3->ipk,
-                        'aktif_organisasi' => $mahasiswa3->aktif_organisasi,
-                        'semester' => $mahasiswa3->semester,
-                        'sedang_menerima_beasiswa' => $mahasiswa3->sedang_menerima_beasiswa,
-                        'domisili' => $mahasiswa3->domisili,
-                        'tunggakan' => $mahasiswa3->tunggakan,
-                    ],
-                    'centroid_4' => [
-                        'jenjang_pendidikan' => $mahasiswa4->jenjang_pendidikan,
-                        'ipk' => $mahasiswa4->ipk,
-                        'aktif_organisasi' => $mahasiswa4->aktif_organisasi,
-                        'semester' => $mahasiswa4->semester,
-                        'sedang_menerima_beasiswa' => $mahasiswa4->sedang_menerima_beasiswa,
-                        'domisili' => $mahasiswa4->domisili,
-                        'tunggakan' => $mahasiswa4->tunggakan,
-                    ],
-                ];
             } else {
-                // ambil data centroid dari hasil iterasi sebelumnya
-                // $hasil_iterasi = DB::table('hasil_iterasi')->where('iterasi', $step - 1)->get();
-                // $hasil_centroid = DB::table('hasil_centroid')->orderBy('id', 'desc')->first();
-                $centroid = [
-                    'centroid_1' => [
-                        'jenjang_pendidikan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1a'),
-                        'ipk' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1b'),
-                        'aktif_organisasi' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1c'),
-                        'semester' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1d'),
-                        'sedang_menerima_beasiswa' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1e'),
-                        'domisili' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1f'),
-                        'tunggakan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c1g'),
-                    ],
-                    'centroid_2' => [
-                        'jenjang_pendidikan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2a'),
-                        'ipk' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2b'),
-                        'aktif_organisasi' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2c'),
-                        'semester' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2d'),
-                        'sedang_menerima_beasiswa' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2e'),
-                        'domisili' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2f'),
-                        'tunggakan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c2g'),
-                    ],
-                    'centroid_3' => [
-                        'jenjang_pendidikan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3a'),
-                        'ipk' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3b'),
-                        'aktif_organisasi' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3c'),
-                        'semester' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3d'),
-                        'sedang_menerima_beasiswa' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3e'),
-                        'domisili' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3f'),
-                        'tunggakan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c3g'),
-                    ],
-                    'centroid_4' => [
-                        'jenjang_pendidikan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4a'),
-                        'ipk' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4b'),
-                        'aktif_organisasi' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4c'),
-                        'semester' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4d'),
-                        'sedang_menerima_beasiswa' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4e'),
-                        'domisili' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4f'),
-                        'tunggakan' => DB::table('hasil_centroid_beasiswa')->where('iterasi', $step - 1)->avg('c4g'),
-                    ],
-                ];
+                return false; 
             }
-            return view('kmeans.beasiswa', compact('centroid', 'mahasiswa', 'step'));
         } else {
-            return view('kmeans.init-beasiswa', compact('mahasiswa'));
+            return false;
         }
     }
+
+    private function syaratBeasiswaYayasanScience($mahasiswa)
+    {
+        if ($mahasiswa['semester'] >= 1 && $mahasiswa['semester'] <= 8) {
+            if ($mahasiswa['ipk'] >= 4) {
+                if ($mahasiswa['prestasi'] == 1) {
+                    if ($mahasiswa['aktif_organisasi'] == 1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false; 
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private function syaratBeasiswaUKT($mahasiswa)
+    {
+        if ($mahasiswa['jenjang_pendidikan'] == 1 || $mahasiswa['jenjang_pendidikan'] == 2) {
+            if ($mahasiswa['ipk'] >= 1) {
+                if ($mahasiswa['tunggakan'] == 1) {
+                    // jika jentang pendidikan 1 semester hanya bisa 3,5
+                    if ($mahasiswa['jenjang_pendidikan'] == 1) {
+                        if ($mahasiswa['semester'] == 3 || $mahasiswa['semester'] == 5) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } elseif ($mahasiswa['jenjang_pendidikan'] == 2) {
+                        if ($mahasiswa['semester'] == 3 || $mahasiswa['semester'] == 5 || $mahasiswa['semester'] == 7) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false; 
+                }
+            } else {
+                return false; 
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private function syaratBeasiswaBNI($mahasiswa)
+    {
+        // jenjang_pendidikan == 2
+        if ($mahasiswa['jenjang_pendidikan'] == 2) {
+            // semester 2 - 8
+            if ($mahasiswa['semester'] >= 2 && $mahasiswa['semester'] <= 8) {
+                // ipk 3 - 4
+                if ($mahasiswa['ipk'] >= 4) {
+                    // aktif organisasi 1
+                    if ($mahasiswa['aktif_organisasi'] == 1) {
+                            if ($mahasiswa['sedang_menerima_beasiswa'] == 1) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                    } else {
+                        return false; 
+                    }
+                } else {
+                    return false; 
+                }
+            } else {
+                return false; 
+            }
+        } else {
+            return false;
+        }
+    }
+
+
+    private function syaratBeasiswaYayasanPelayananKasih($mahasiswa)
+    {
+    // D3 - S1
+        if ($mahasiswa['jenjang_pendidikan'] == 1 || $mahasiswa['jenjang_pendidikan'] == 2) {
+            // semester 2 - 8
+            if ($mahasiswa['semester'] >= 2 && $mahasiswa['semester'] <= 8) {
+                // ipk 3 - 4
+                if ($mahasiswa['ipk'] >= 4) {
+                    // aktif organisasi 1
+                    if ($mahasiswa['aktif_organisasi'] == 1) {
+                        // Tidak sedang menerima beasiswa dari pihak lain
+                        if ($mahasiswa['sedang_menerima_beasiswa'] == 1) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return false; 
+                    }
+                } else {
+                    return false; 
+                }
+            } else {
+                return false; 
+            }
+        } else{ 
+            return false;
+        }
+    }
+
+    private function syaratBeasiswaPemkotBandung($mahasiswa)
+    {
+        if ($mahasiswa['domisili'] == 1) {
+            if ($mahasiswa['ipk'] >= 4) {
+                if ($mahasiswa['sedang_menerima_beasiswa'] == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false; 
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private function tipeBeasiswa($mahasiswa, $cluster)
+    {
+
+        $mahasiswa = $mahasiswa->toArray();
+        // mahasiswa bernama amelia
+        
+        if ($cluster == "C1") {
+            if ($this->syaratBeasiswaBNI($mahasiswa)) {
+                $total_beasiswa_bni = Mahasiswa::where('tipe_beasiswa', 'BNI')->count();
+                $total_beasiswa_ypk = Mahasiswa::where('tipe_beasiswa', 'Yayasan Pelayanan Kasih')->count();
+                if ($total_beasiswa_bni < $total_beasiswa_ypk) {
+                    return "BNI";
+                } else {
+                    return "Yayasan Pelayanan Kasih";
+                }
+            } elseif ($this->syaratBeasiswaYayasanPelayananKasih($mahasiswa)) {
+                return "Yayasan Pelayanan Kasih";
+            } elseif ($this->syaratBeasiswaPemkotBandung($mahasiswa)) {
+                return "Pemkot Bandung";
+            }else if ($this->syaratBeasiswaUKT($mahasiswa)) {
+                    return "UKT";
+            } else {
+                return "-";
+            }
+        } elseif ($cluster == "C2" || $cluster == "C3") {
+            if ($this->syaratBeasiswaRektorUnikomYS($mahasiswa)) {
+                $total_beasiswa_rektor_unikom = Mahasiswa::where('tipe_beasiswa', 'Rektor Unikom')->count();
+                $total_beasiswa_science = Mahasiswa::where('tipe_beasiswa', 'Yayasan Science')->count();
+                if ($total_beasiswa_rektor_unikom < $total_beasiswa_science) {
+                    return "Rektor Unikom";
+                } else {
+                    return "Yayasan Science";
+                }
+            } else {
+                return "-";
+            }
+           
+        } else {
+            return "-";
+        }
+
+        
+    }
+
+
 }

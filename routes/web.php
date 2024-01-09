@@ -13,9 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'DashboardController@index')->name('dashboard.index');
+Route::post('/reset-iterasi', 'DashboardController@resetIterasi')->name('dashboard.reset-iterasi');
 
 
 // Route::group mahasiswa
@@ -29,10 +28,10 @@ Route::prefix('mahasiswa')->group(function () {
     Route::delete('/{mahasiswa}/destroy', 'MahasiswaController@destroy')->name('mahasiswa.destroy');
 });
 
+
+
 // Route::group kmeans
 Route::prefix('kmeans')->group(function () {
     Route::get('/', 'KmeansController@index')->name('kmeans.index');
-    Route::get('/beasiswa', 'KmeansController@beasiswa')->name('kmeans.beasiswa');
-
 });
 

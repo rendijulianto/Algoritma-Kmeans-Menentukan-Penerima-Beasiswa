@@ -21,15 +21,17 @@ return new class extends Migration
             $table->integer('penghasilan_ibu');
             $table->integer('jumlah_saudara');
             $table->integer('kondisi_anak');
-            $table->boolean('status_penerima_beasiswa')->nullable()->default(false);
-            $table->string('klaster_beasiswa', 50)->nullable();
+            $table->string('tipe_beasiswa')->nullable();
+            $table->string('klaster_beasiswa')->nullable();
             $table->integer('jenjang_pendidikan');
             $table->integer('ipk');
+            $table->integer('prestasi')->default(0);
             $table->integer('aktif_organisasi');
             $table->integer('semester');
             $table->integer('sedang_menerima_beasiswa');
             $table->integer('domisili');
             $table->integer('tunggakan');
+            $table->integer('memiliki_sktm')->default(0);
             $table->timestamps();
         });
     }

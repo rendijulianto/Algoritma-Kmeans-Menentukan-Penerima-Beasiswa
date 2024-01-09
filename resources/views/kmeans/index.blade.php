@@ -12,26 +12,67 @@
                       <strong>Perhatian!</strong> Pastikan data mahasiswa sudah diimport sebelum melakukan proses k-means.
                     </p>
                   </div>
+                  {{-- table centroid iterasi ke $step --}}
+                  <div class="table-responsive">
+                    <table class="table search-table v-middle">
+                      <thead class="header-item">
+                        <th> Cluster 1</th>
+                        <th class="font-weight-medium fs-4">
+                          C. Pekerjaan Ayah
+                        </th>
+                        <th class="font-weight-medium fs-4">
+                          C. Pekerjaan Ibu
+                        </th>
+                        <th class="font-weight-medium fs-4">
+                          C. Penghasilan Ayah
+                        </th>
+                        <th class="font-weight-medium fs-4">
+                          C. Penghasilan Ibu
+                        </th>
+                        <th class="font-weight-medium fs-4">
+                          C. Jumlah Saudara
+                        </th>
+                        <th class="font-weight-medium fs-4">
+                          C. Kondisi Anak
+                        </th>
+                      </thead>
+                      <tbody>
+                        <tr>
+                            <td> <span class="badge bg-success">C1</span></td>
+                            <td>{{$centroid['centroid_1']['pekerjaan_ayah']}}</td>
+                            <td>{{$centroid['centroid_1']['pekerjaan_ibu']}}</td>
+                            <td>{{$centroid['centroid_1']['penghasilan_ayah']}}</td>
+                            <td>{{$centroid['centroid_1']['penghasilan_ibu']}}</td>
+                            <td>{{$centroid['centroid_1']['jumlah_saudara']}}</td>
+                            <td>{{$centroid['centroid_1']['kondisi_anak']}}</td>
+                        </tr>
+                        <tr>
+                            <td> <span class="badge bg-warning">C2</span></td>
+                            <td>{{$centroid['centroid_2']['pekerjaan_ayah']}}</td>
+                            <td>{{$centroid['centroid_2']['pekerjaan_ibu']}}</td>
+                            <td>{{$centroid['centroid_2']['penghasilan_ayah']}}</td>
+                            <td>{{$centroid['centroid_2']['penghasilan_ibu']}}</td>
+                            <td>{{$centroid['centroid_2']['jumlah_saudara']}}</td>
+                            <td>{{$centroid['centroid_2']['kondisi_anak']}}</td>
+                        </tr>
+                        <tr>
+                            <td> <span class="badge bg-danger">C3</span></td>
+                            <td>{{$centroid['centroid_3']['pekerjaan_ayah']}}</td>
+                            <td>{{$centroid['centroid_3']['pekerjaan_ibu']}}</td>
+                            <td>{{$centroid['centroid_3']['penghasilan_ayah']}}</td>
+                            <td>{{$centroid['centroid_3']['penghasilan_ibu']}}</td>
+                            <td>{{$centroid['centroid_3']['jumlah_saudara']}}</td>
+                            <td>{{$centroid['centroid_3']['kondisi_anak']}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
                 
                   <div class="table-responsive">
                     <table class="table search-table v-middle">
                       <thead class="header-item">
-                        <th>
-                          <div class="n-chk align-self-center text-center">
-                            <div class="form-check">
-                              <input
-                                type="checkbox"
-                                class="form-check-input secondary"
-                                id="contact-check-all"
-                              />
-                              <label
-                                class="form-check-label"
-                                for="contact-check-all"
-                              ></label>
-                              <span class="new-control-indicator"></span>
-                            </div>
-                          </div>
-                        </th>
+                    
                         <th class="font-weight-medium fs-4">Nama</th>
                         
                         <th class="font-weight-medium fs-4">C1</th>
@@ -43,47 +84,25 @@
                        @forelse ($mahasiswa as $mhs)
                         <!-- row -->
                         <tr class="search-items">
-                            <td>
-                              <div class="n-chk align-self-center text-center">
-                                <div class="form-check">
-                                  <input
-                                    type="checkbox"
-                                    class="form-check-input contact-chkbox primary"
-                                    id="checkbox1"
-                                  />
-                                  <label
-                                    class="form-check-label"
-                                    for="checkbox1"
-                                  ></label>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="d-flex align-items-center">
-                                <span
-                                  class="
-                                    round
-                                    rounded-circle
-                                    text-white
-                                    d-inline-block
-                                    text-center
-                                    bg-info
-                                  "
-                                  >{{ substr($mhs->nama, 0, 1) }}</span
+                        
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img
+                             src="{{asset('assets/images/profile/user-1.jpg')}}"
+                             class="rounded  round-50"
+                             />
+                          <div class="ms-3">
+                             <h6 class=" mb-0">
+                                {{$mhs->nama}}
+                             </h6>
+                             <span class="text-muted"
+                                >{{$mhs->jurusan}}
+                                </span
                                 >
-                                <div class="ms-3">
-                                  <div class="user-meta-info">
-                                    <h5 class="user-name mb-0" data-name="{{ $mhs->nama }}">{{ $mhs->nama }}</h5>
-                                      
-                                    <small
-                                      class="user-work text-muted"
-                                      data-occupation="Web Developer"
-                                      >{{$mhs->jurusan}}</small
-                                    >
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
+                             <br />
+                          </div>
+                       </div>
+                        </td>
                            
                             @php 
                         
@@ -189,22 +208,7 @@
                                 <td colspan="9" class="text-center">Data Kosong</td>    
                             </tr>
                         @endforelse
-                          @php 
-                           $stop = false;
-                            if($step >1) {
-                              $hasil_sebelumnya = DB::table('hasil_iterasi')->where('iterasi', $step - 1)->get();
-                                        $hasil_sekarang = DB::table('hasil_iterasi')->where('iterasi', $step)->get();
-                                        // loop untuk membandingkan hasil iterasi sebelumnya dengan hasil iterasi sekarang
-                                        foreach($hasil_sebelumnya as $key => $value) {
-                                            if($value->c1 != $hasil_sekarang[$key]->c1 || $value->c2 != $hasil_sekarang[$key]->c2 || $value->c3 != $hasil_sekarang[$key]->c3) {
-                                                $stop = false;
-                                                break;
-                                            } else {
-                                                $stop = true;
-                                            }
-                                        }
-                            }
-                          @endphp
+                        
                           @if($stop)
                             <tr>
                               <td colspan="9" class="text-center">
@@ -236,7 +240,7 @@
                               <a href="{{route('kmeans.index', ['step' => $step + 1])}}" class="btn btn-primary">Lanjutkan Proses</a>
                              </td>    
                           </tr>
-                            
+
                           @endif
                       </tbody>
                     </table>
@@ -262,27 +266,10 @@
                 <div class="table-responsive">
                   <table class="table search-table v-middle">
                     <thead class="header-item">
-                      <th>
-                        <div class="n-chk align-self-center text-center">
-                          <div class="form-check">
-                            <input
-                              type="checkbox"
-                              class="form-check-input secondary"
-                              id="contact-check-all"
-                            />
-                            <label
-                              class="form-check-label"
-                              for="contact-check-all"
-                            ></label>
-                            <span class="new-control-indicator"></span>
-                          </div>
-                        </div>
-                      </th>
+          
                       <th class="font-weight-medium fs-4">Nama</th>
                       <th class="font-weight-medium fs-4">Pekerjaan Ayah</th>
                         <th class="font-weight-medium fs-4">Pekerjaan Ibu</th>
-                        <th class="font-weight-medium fs-4">Penghasilan Ayah</th>
-                        <th class="font-weight-medium fs-4">Penghasilan Ibu</th>
                         <th class="font-weight-medium fs-4">Jumlah Saudara</th>
                         <th class="font-weight-medium fs-4">Kondisi Anak</th>
                         <th class="font-weight-medium fs-4">Cluster</th>
@@ -292,45 +279,22 @@
                       <!-- row -->
                       <tr class="search-items">
                           <td>
-                            <div class="n-chk align-self-center text-center">
-                              <div class="form-check">
-                                <input
-                                  type="checkbox"
-                                  class="form-check-input contact-chkbox primary"
-                                  id="checkbox1"
-                                />
-                                <label
-                                  class="form-check-label"
-                                  for="checkbox1"
-                                ></label>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
                             <div class="d-flex align-items-center">
-                              <span
-                                class="
-                                  round
-                                  rounded-circle
-                                  text-white
-                                  d-inline-block
-                                  text-center
-                                  bg-info
-                                "
-                                >{{ substr($mhs->nama, 0, 1) }}</span
-                              >
+                              <img
+                                 src="{{asset('assets/images/profile/user-1.jpg')}}"
+                                 class="rounded  round-50"
+                                 />
                               <div class="ms-3">
-                                <div class="user-meta-info">
-                                  <h5 class="user-name mb-0" data-name="{{ $mhs->nama }}">{{ $mhs->nama }}</h5>
-                                    
-                                  <small
-                                    class="user-work text-muted"
-                                    data-occupation="Web Developer"
-                                    >{{$mhs->jurusan}}</small
-                                  >
-                                </div>
+                                 <h6 class=" mb-0">
+                                    {{$mhs->nama}}
+                                 </h6>
+                                 <span class="text-muted"
+                                    >{{$mhs->jurusan}}
+                                    </span
+                                    >
+                                 <br />
                               </div>
-                            </div>
+                           </div>
                           </td>
                          <?php 
                           $hasil_iterasi = DB::table('hasil_iterasi')->where('mahasiswa_id', $mhs->id)->where('iterasi', $step)->first();
@@ -340,17 +304,14 @@
                           $cluster = $hasil_iterasi->rata_rata;
                           ?>
                           <td>
-                            {{$mhs->pekerjaan_ayah_text}}
+                            {{$mhs->pekerjaan_ayah_text}} <br />
+                            {{$mhs->penghasilan_ayah_text}}
                           </td>
                           <td>
-                              {{$mhs->pekerjaan_ibu_text}}
-                          </td>
-                          <td>
-                              {{$mhs->penghasilan_ayah_text}}
-                          </td>
-                          <td>
+                              {{$mhs->pekerjaan_ibu_text}} <br />
                               {{$mhs->penghasilan_ibu_text}}
                           </td>
+                          
                           <td>
                               {{$mhs->jumlah_saudara_text}}
                           </td>
@@ -359,24 +320,11 @@
                           </td>
                           <td>
                               @if($cluster == 'C1')
-                                <?php 
-                                //  update cluster
-                                 $update_cluster = DB::table('mahasiswa')->where('id', $mhs->id)->update(['status_penerima_beasiswa' => true]);
-                                ?>
                                 <span class="badge bg-success">C1</span>
                               @elseif($cluster == 'C2')
                                 <span class="badge bg-warning">C2</span>
-
-                                <?php 
-                                //  update cluster
-                                 $update_cluster = DB::table('mahasiswa')->where('id', $mhs->id)->update(['status_penerima_beasiswa' => false]);
-                                ?>
                               @elseif($cluster == 'C3')
                                 <span class="badge bg-danger">C3</span>
-                                <?php 
-                                //  update cluster
-                                 $update_cluster = DB::table('mahasiswa')->where('id', $mhs->id)->update(['status_penerima_beasiswa' => false]);
-                                ?>
                               @endif
                           </td>
 
